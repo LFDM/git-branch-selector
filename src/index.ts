@@ -3,7 +3,7 @@ import { execSync } from "child_process";
 import inquirer from "inquirer";
 
 function runGitBranches(): string {
-  const output = execSync("git branch -v --sort=committerdate", {
+  const output = execSync("git branch -v --sort=-committerdate", {
     stdio: ["ignore", "pipe", "pipe"],
   });
   return output.toString("utf8");
