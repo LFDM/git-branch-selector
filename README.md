@@ -1,0 +1,2 @@
+- Run `npm install`
+- Run `npm link:global` to build and make globally accessible as `git-branch-selector`
