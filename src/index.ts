@@ -127,4 +127,11 @@ async function main(): Promise<void> {
   execSync(`git checkout ${selected}`, { stdio: "inherit" });
 }
 
-main();
+main().catch((err) => {
+  if (err instanceof Error && err.name === "ExitPromptError") {
+    // all good, just silence this error
+  } else {
+    // Rethrow unknown errors
+    return Promise.reject(err);
+  }
+});
