@@ -118,7 +118,7 @@ async function main(): Promise<void> {
     pageSize: 20,
     source: (term) => {
       return term
-        ? choices.filter((c) => isSubsequence(term, c.name))
+        ? choices.filter((c) => isSubsequence(term, c.value))
         : choices;
     },
   });
