@@ -1,6 +1,6 @@
 #!/usr/bin/env node
+import { search } from "@inquirer/prompts";
 import { execSync } from "child_process";
-import inquirer from "inquirer";
 
 function runGitBranches(): string {
   const output = execSync("git branch -v --sort=-committerdate", {
@@ -43,6 +43,27 @@ function parseBranches(raw: string): BranchInfo[] {
       } as BranchInfo;
     });
 }
+
+/**
+ * Checks if `search` is a subsequence of `text` (case-insensitive).
+ * Characters must appear in order, but can be separated.
+ */
+const isSubsequence = (search: string, text: string): boolean => {
+  const searchLower = search.trim().toLowerCase();
+  const textLower = text.trim().toLowerCase();
+  let i = 0; // pointer for searchTermLower
+  let j = 0; // pointer for textLower
+
+  while (i < searchLower.length && j < textLower.length) {
+    if (searchLower[i] === textLower[j]) {
+      i++; // Match found, advance searchTerm pointer
+    }
+    j++; // Always advance text pointer
+  }
+
+  // If we reached the end of the searchTerm, it's a subsequence
+  return i === searchLower.length;
+};
 
 async function main(): Promise<void> {
   const raw = runGitBranches();
@@ -92,15 +113,15 @@ async function main(): Promise<void> {
     };
   });
 
-  const { selected } = await inquirer.prompt<{ selected: string }>([
-    {
-      type: "list",
-      name: "selected",
-      message: "Select a branch to checkout:",
-      pageSize: 20,
-      choices,
+  const selected = await search<string>({
+    message: "Select a branch to checkout:",
+    pageSize: 20,
+    source: (term) => {
+      return term
+        ? choices.filter((c) => isSubsequence(term, c.name))
+        : choices;
     },
-  ]);
+  });
 
   execSync(`git checkout ${selected}`, { stdio: "inherit" });
 }
