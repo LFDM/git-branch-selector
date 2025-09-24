@@ -110,6 +110,7 @@ async function main(): Promise<void> {
     return {
       name: `${marker} ${nameCol}  ${shaCol} ${msgCol}`,
       value: b.name,
+      short: b.name,
     };
   });
 
@@ -118,7 +119,7 @@ async function main(): Promise<void> {
     pageSize: 20,
     source: (term) => {
       return term
-        ? choices.filter((c) => isSubsequence(term, c.value))
+        ? choices.filter((c) => isSubsequence(term, c.short))
         : choices;
     },
   });
