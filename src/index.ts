@@ -132,7 +132,7 @@ async function main(): Promise<void> {
         ? "Select a branch to checkout:"
         : action === "rebase"
         ? "Select a branch to rebase onto:"
-        : "Select a branch",
+        : "Select a branch:",
     pageSize: 20,
     source: (term) => {
       return term
