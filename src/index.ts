@@ -65,7 +65,19 @@ const isSubsequence = (search: string, text: string): boolean => {
   return i === searchLower.length;
 };
 
+type Action = "checkout" | "rebase";
+const ALLOWED_ACTIONS: Action[] = ["checkout", "rebase"];
+
+function getActionFromArgs(argv: string[]): Action | null {
+  const arg = argv[0]?.toLowerCase();
+  if (ALLOWED_ACTIONS.includes(arg as Action)) {
+    return arg as Action;
+  }
+  return null;
+}
+
 async function main(): Promise<void> {
+  const action = getActionFromArgs(process.argv.slice(2));
   const raw = runGitBranches();
   const branches = parseBranches(raw);
 
@@ -115,7 +127,12 @@ async function main(): Promise<void> {
   });
 
   const selected = await search<string>({
-    message: "Select a branch to checkout:",
+    message:
+      action === "checkout"
+        ? "Select a branch to checkout:"
+        : action === "rebase"
+        ? "Select a branch to rebase onto:"
+        : "Select a branch",
     pageSize: 20,
     source: (term) => {
       return term
@@ -124,7 +141,11 @@ async function main(): Promise<void> {
     },
   });
 
-  execSync(`git checkout ${selected}`, { stdio: "inherit" });
+  if (action) {
+    execSync(`git ${action} ${selected}`, { stdio: "inherit" });
+  } else {
+    console.log(selected);
+  }
 }
 
 main().catch((err) => {
