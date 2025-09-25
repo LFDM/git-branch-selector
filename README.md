@@ -2,6 +2,7 @@
 
 - Run `npm install`
 - Run `npm run link:global` to build and make globally accessible as `git-branch-selector`
+- After linking once, just run `npm run build` to release updates
 
 ## Usage
 
